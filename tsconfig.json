@@ -8,9 +8,8 @@
     "strictPropertyInitialization": false,
     "baseUrl": "./src",
     "paths": {
-      "@modules/*": ["modules/*"],
-      "@config/*": ["config/*"],
-      "@shared/*": ["shared/*"]
+      "@models/*": ["models/*"],
+      "@config/*": ["config/*"]
     },
     "esModuleInterop": true,
     "experimentalDecorators": true,
