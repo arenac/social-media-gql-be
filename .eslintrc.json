@@ -23,6 +23,7 @@
       "prettier"
     ],
     "rules": {
+      "import/no-unresolved": "off",
       "no-underscore-dangle": "off",
       "prettier/prettier": "error",
       "class-methods-use-this": "off",

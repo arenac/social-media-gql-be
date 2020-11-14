@@ -1,20 +1,35 @@
+/* eslint-disable import/first */
 // import '@config/env';
 import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 import { ApolloServer, gql } from 'apollo-server';
 import mongose from 'mongoose';
 
-dotenv.config();
+import Post from './models/Post';
 
 const typeDefs = gql`
+  type Post {
+    id: ID!
+    body: String!
+    createdAt: String!
+    userName: String!
+  }
   type Query {
-    sayHi: String!
+    getPosts: [Post]
   }
 `;
-
 const resolvers = {
   Query: {
-    sayHi: () => 'Hello World!!!',
+    async getPosts() {
+      try {
+        const posts = await Post.find();
+        return posts;
+      } catch (err) {
+        throw new Error(err);
+      }
+    },
   },
 };
 
@@ -29,8 +44,7 @@ mongose
   })
   .then(() => {
     console.log('⭐ Connected to the DB!');
-    return server.listen({ port: 5000 });
-  })
-  .then(res => {
-    console.log(`🚀 Server running at ${res.url}`);
   });
+server.listen({ port: 5000 }).then(res => {
+  console.log(`🚀 Server running at ${res.url}`);
+});
