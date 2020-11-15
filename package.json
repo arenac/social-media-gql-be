@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "dev:server": "nodemon 'src/server.ts' --exec 'ts-node' src/server.ts",
+    "dev:server": "nodemon",
     "start": "ts-node -r tsconfig-paths/register src/server.ts",
     "typeorm": "ts-node-dev ./node_modules/typeorm/cli.js",
     "test": "jest"
