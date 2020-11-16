@@ -4,6 +4,7 @@ export default {
   Query: {
     async getPosts() {
       try {
+        console.log('POSTS');
         const posts = await Post.find();
         return posts;
       } catch (err) {

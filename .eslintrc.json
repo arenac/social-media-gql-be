@@ -32,17 +32,7 @@
       "@typescript-eslint/no-unused-vars": ["error", {
         "argsIgnorePattern": "_"
       }],
-      "@typescript-eslint/naming-convention": [
-        "error",
-        {
-          "selector": "interface",
-          "format": ["PascalCase"],
-          "custom": {
-            "regex": "^I[A-Z]",
-            "match": true
-          }
-        }
-      ],
+      "@typescript-eslint/naming-convention": "off",
       "import/extensions": [
         "error",
         "ignorePackages",
