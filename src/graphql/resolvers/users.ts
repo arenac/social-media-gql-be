@@ -1,29 +1,53 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { UserInputError } from 'apollo-server';
 
 import User from '../../models/User';
+
+import { validateRegisterInput } from '../../utils/validators';
+
+export interface IRegisterUserArgs {
+  userName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
+interface Args {
+  registerInput: IRegisterUserArgs;
+}
 
 export default {
   Mutation: {
     async register(
       parent: any,
-      args: any,
+      args: Args,
       context: any,
       info: any,
     ): Promise<any> {
-      /**
-       * TODO:
-       * -Validate user data
-       * - Make sure user does not alredy exist
-       * - Hash password and create an auth token
-       */
+      console.log(info);
+      const { userName, email, password, confirmPassword } = args.registerInput;
 
-      const {
+      const { errors, valid } = validateRegisterInput({
         userName,
         email,
         password,
         confirmPassword,
-      } = args?.registerInput;
+      });
+
+      if (!valid) {
+        throw new UserInputError('Errors', { errors });
+      }
+
+      const user = await User.findOne({ email });
+
+      if (user) {
+        throw new UserInputError('User already exists', {
+          errors: {
+            email: 'This email is alaredy used.',
+          },
+        });
+      }
 
       if (password !== confirmPassword) {
         throw new Error('Passwords needs to be equal!');
@@ -53,6 +77,7 @@ export default {
       );
 
       return {
+        ...res,
         id: res._id,
         email: res.email,
         userName: res.userName,
