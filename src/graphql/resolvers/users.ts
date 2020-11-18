@@ -2,9 +2,12 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { UserInputError } from 'apollo-server';
 
-import User from '../../models/User';
+import User, { IUserDocument } from '../../models/User';
 
-import { validateRegisterInput } from '../../utils/validators';
+import {
+  validateRegisterInput,
+  validateLoginInput,
+} from '../../utils/validators';
 
 export interface IRegisterUserArgs {
   userName: string;
@@ -17,15 +20,60 @@ interface Args {
   registerInput: IRegisterUserArgs;
 }
 
+const generateToken = (user: IUserDocument) => {
+  return jwt.sign(
+    {
+      id: user.id,
+      email: user.email,
+      userName: user.userName,
+    },
+    process.env.SECRET_KEY || '',
+    {
+      expiresIn: '1h',
+    },
+  );
+};
+
 export default {
   Mutation: {
+    async login(
+      parent: any,
+      args: { email: string; password: string },
+    ): Promise<any> {
+      const { email, password } = args;
+      const { errors, valid } = validateLoginInput(email, password);
+
+      if (!valid) {
+        throw new UserInputError('Errors', { errors });
+      }
+
+      const user = await User.findOne({ email });
+
+      if (!user) {
+        errors.general = 'User does not exist';
+        throw new UserInputError('User not found', { errors });
+      }
+
+      const match = await bcrypt.compare(password, user.password);
+
+      if (!match) {
+        errors.general = 'Can not login';
+        throw new UserInputError('Wrong credentials', { errors });
+      }
+
+      const token = generateToken(user);
+
+      return {
+        id: user._id,
+        token,
+      };
+    },
     async register(
       parent: any,
       args: Args,
       context: any,
       info: any,
     ): Promise<any> {
-      console.log(info);
       const { userName, email, password, confirmPassword } = args.registerInput;
 
       const { errors, valid } = validateRegisterInput({
@@ -64,24 +112,13 @@ export default {
 
       const res = await newUser.save();
 
-      const token = jwt.sign(
-        {
-          id: res.id,
-          email: res.email,
-          userName: res.userName,
-        },
-        process.env.SECRET_KEY || '',
-        {
-          expiresIn: '1h',
-        },
-      );
+      const token = generateToken(res);
 
       return {
         ...res,
         id: res._id,
         email: res.email,
         userName: res.userName,
-        password: res.password,
         createdAt: res.createdAt,
         updatedAt: res.updatedAt,
         token,

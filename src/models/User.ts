@@ -9,7 +9,7 @@ const UserSchema = new Schema(
   { timestamps: true },
 );
 
-export interface User {
+export interface IUser {
   userName: string;
   password: string;
   email: string;
@@ -17,6 +17,6 @@ export interface User {
   updatedAt: string;
 }
 
-export interface UserDocument extends User, Document {}
+export interface IUserDocument extends IUser, Document {}
 
-export default model<UserDocument>('User', UserSchema);
+export default model<IUserDocument>('User', UserSchema);
