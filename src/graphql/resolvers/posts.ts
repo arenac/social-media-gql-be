@@ -1,4 +1,6 @@
-import Post from '../../models/Post';
+import { UserInputError } from 'apollo-server';
+
+import Post, { PostsDocument } from '../../models/Post';
 import checkAuth from '../../utils/checkAuth';
 
 export default {
@@ -32,8 +34,6 @@ export default {
     async createPost(parent: any, { body }: any, context: any, info: any) {
       const user = checkAuth(context);
 
-      console.log(user);
-
       const { id, userName } = user;
 
       const newPost = new Post({
@@ -47,6 +47,23 @@ export default {
       const post = await newPost.save();
 
       return post;
+    },
+
+    async deletePost(parent: any, { postId }: any, context: any, info: any) {
+      const user = checkAuth(context);
+
+      try {
+        const response = await Post.findById(postId);
+        const post = response as PostsDocument;
+
+        if (user.id === String(post.user)) {
+          await post.deleteOne();
+          return 'Post deleted successfully';
+        }
+        throw new UserInputError('Action not allowed');
+      } catch (error) {
+        throw new Error(error);
+      }
     },
   },
 };

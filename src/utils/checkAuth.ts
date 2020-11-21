@@ -4,6 +4,7 @@ import { AuthenticationError } from 'apollo-server';
 interface User {
   id: string;
   userName: string;
+  email: string;
 }
 
 export default (context: any): User => {
