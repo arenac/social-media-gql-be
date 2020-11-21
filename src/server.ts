@@ -13,6 +13,9 @@ import resolvers from './graphql/resolvers';
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  context: ({ req }) => ({
+    req,
+  }),
 });
 
 mongose

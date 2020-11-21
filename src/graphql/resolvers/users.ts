@@ -68,6 +68,7 @@ export default {
         token,
       };
     },
+
     async register(
       parent: any,
       args: Args,
