@@ -37,9 +37,9 @@ const generateToken = (user: IUserDocument) => {
 export default {
   Mutation: {
     async login(
-      parent: any,
+      _parent: unknown,
       args: { email: string; password: string },
-    ): Promise<any> {
+    ): Promise<{ id: string; token: string } | void> {
       const { email, password } = args;
       const { errors, valid } = validateLoginInput(email, password);
 
@@ -70,10 +70,10 @@ export default {
     },
 
     async register(
-      parent: any,
+      _parent: unknown,
       args: Args,
-      context: any,
-      info: any,
+      _context: unknown,
+      _info: unknown,
     ): Promise<any> {
       const { userName, email, password, confirmPassword } = args.registerInput;
 

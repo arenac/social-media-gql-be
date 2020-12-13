@@ -5,7 +5,7 @@ import checkAuth from '../../utils/checkAuth';
 
 export default {
   Query: {
-    async getPosts() {
+    async getPosts(): Promise<PostsDocument[] | void> {
       try {
         const posts = await Post.find().sort({ createdAt: -1 });
         return posts;
@@ -14,10 +14,13 @@ export default {
       }
     },
 
-    async getPost(parent: any, args: any, context: any, info: any) {
+    async getPost(
+      _parent: unknown,
+      { postId }: unknown,
+      _context: unknown,
+      _info: unknown,
+    ): Promise<PostsDocument | void> {
       try {
-        console.log(args);
-        const { postId } = args;
         const post = await Post.findById(postId);
 
         if (post) {
@@ -31,7 +34,12 @@ export default {
   },
 
   Mutation: {
-    async createPost(parent: any, { body }: any, context: any, info: any) {
+    async createPost(
+      _parent: unknown,
+      { body }: unknown,
+      context: unknown,
+      _info: unknown,
+    ): Promise<PostsDocument> {
       const user = checkAuth(context);
 
       const { id, userName } = user;
@@ -49,7 +57,12 @@ export default {
       return post;
     },
 
-    async deletePost(parent: any, { postId }: any, context: any, info: any) {
+    async deletePost(
+      _parent: unknown,
+      { postId }: unknown,
+      context: unknown,
+      _info: unknown,
+    ): Promise<void | string> {
       const user = checkAuth(context);
 
       try {
